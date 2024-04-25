@@ -6,10 +6,7 @@ import com.example.hlhwqueuer.dto.QueuePostCreate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.jsonwebtoken.Jwe;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.JwtTokenizer;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -37,8 +34,8 @@ public class PostController {
     public ResponseEntity createPost(@RequestHeader("Authorization") final String bearer, @RequestBody PostCreateDto postCreateDto) throws JsonProcessingException {
         JwtParser jwtParser = Jwts.parser().verifyWith((SecretKey) getSigningKey()).build();
         try {
-            var jwt = jwtParser.parse(bearer).accept(Jwt.UNSECURED_CLAIMS);
-            var id = (String) jwt.getPayload().get("user_id");
+            var jwt = jwtParser.parse(bearer).accept(Jws.CLAIMS);
+            var id = (Integer) jwt.getPayload().get("user_id");
 
             var message = new QueuePostCreate(id, postCreateDto.getContent());
             var json = objectWriter.writeValueAsString(message);

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class QueuePostCreate {
-    private String userId;
+    private Integer userId;
     private String content;
 }
