@@ -29,6 +29,8 @@ import java.security.Key;
 public class PostController {
     @Value("${key: Test}")
     private String key;
+    @Value("${queue-url: queue}")
+    private String queue;
     private final AmazonSQS amazonSQS;
     private final ObjectWriter objectWriter = new ObjectMapper().writer().withDefaultPrettyPrinter();
     @PostMapping
@@ -40,7 +42,8 @@ public class PostController {
 
             var message = new QueuePostCreate(id, postCreateDto.getContent());
             var json = objectWriter.writeValueAsString(message);
-            amazonSQS.sendMessage(, json)
+            amazonSQS.sendMessage(queue, json);
+            return ResponseEntity.ok().build();
         }
         catch (Exception e){
             log.error("failed to process event: " + e.getMessage());
@@ -49,7 +52,7 @@ public class PostController {
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode("");
+        byte[] keyBytes = Decoders.BASE64.decode(key);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
